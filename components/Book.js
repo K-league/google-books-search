@@ -1,0 +1,1 @@
+// create component with a single book display

@@ -1,7 +1,8 @@
-const Book = require ("../models/books.js");
+const Book = require ("../../models/books.js");
+const express = require("express");
 
 //get all
-const getBook = async (req, res) => {
+const getBooks = async (req, res) => {
     await Book.find({}, (err, books) => {
         if (err) {
             return res.status(400).json({ success: false, error: err })
@@ -16,7 +17,7 @@ const getBook = async (req, res) => {
 };
 
 //update
-const savedBook = async (req, res) => {
+const saveBook = async (req, res) => {
     const body = req.body
 
     if (!body) {
@@ -25,7 +26,7 @@ const savedBook = async (req, res) => {
             error: 'You must provide a book',
         })
     }
-    const book = new savedBook(body)
+    const book = new Book(body);
 
     if (!book) {
         return res.status(400).json({ success: false, error: 'Failed to save' })
@@ -41,6 +42,7 @@ const savedBook = async (req, res) => {
             })
         })
         .catch(error => {
+            console.log(error);
             return res.status(400).json({
                 error,
                 message: 'Book not saved to collection',
@@ -64,8 +66,10 @@ const deleteBook = async (req, res) => {
     }).catch(err => console.log(err))
 }
 
-module.exports = {
-    getBook,
-    savedBook,
-    deleteBook,
-}
+const router = express.Router()
+
+router.post('/books', saveBook)
+router.delete('/books/:id', deleteBook)
+router.get('/books', getBooks)
+
+module.exports = router
